@@ -16,6 +16,7 @@ class OBJofXL(object):
                      u'預繳餘額': "", 'Line': ""}
     inwb = []
     workseet = []
+    New_PSN = 0
     #Check Ann
     def __init__(self, arg1, arg2):
         
@@ -81,36 +82,36 @@ class OBJofXL(object):
         '''
         looking for the last row and add customer data
         '''
-        new_row = self.workseet.max_row +1 
-        self.Save_Data('A'+str(new_row), self.workseet.max_row)
-        self.Save_Data('B'+str(new_row), member_data[0])
-        self.Save_Data('C'+str(new_row), member_data[1])
-        self.Save_Data('D'+str(new_row), member_data[2])
-        self.Save_Data('E'+str(new_row), member_data[3])
-        self.Save_Data('F'+str(new_row), member_data[4])
+        self.New_PSN = self.workseet.max_row + 1
+        self.Save_Data('A'+str(self.New_PSN), self.workseet.max_row)
+        self.Save_Data('B'+str(self.New_PSN), member_data[0])
+        self.Save_Data('C'+str(self.New_PSN), member_data[1])
+        self.Save_Data('D'+str(self.New_PSN), member_data[2])
+        self.Save_Data('E'+str(self.New_PSN), member_data[3])#根數
+        self.Save_Data('F'+str(self.New_PSN), member_data[4])
         #睫毛
         if member_data[5] == u"睫毛": 
-            self.Save_Data('G'+str(new_row), 0)
+            self.Save_Data('G'+str(self.New_PSN), 0)
         else:
-            self.Save_Data('G'+str(new_row), 1)  
+            self.Save_Data('G'+str(self.New_PSN), 1)  
         #除毛         
         if member_data[6] == True:
-            self.Save_Data('H'+str(new_row), 1)
+            self.Save_Data('H'+str(self.New_PSN), 1)
         else:
-            self.Save_Data('H'+str(new_row), 0)
+            self.Save_Data('H'+str(self.New_PSN), 0)
         #入會日
-        self.Save_Data('I'+str(new_row), time.strftime("%Y/%m/%d"))
+        self.Save_Data('I'+str(self.New_PSN), time.strftime("%Y/%m/%d"))
         #上次消費日 
-        self.Save_Data('J'+str(new_row), time.strftime("%Y/%m/%d")) 
+        self.Save_Data('J'+str(self.New_PSN), time.strftime("%Y/%m/%d")) 
         #重接
         if member_data[7] == True:
-            self.Save_Data('K'+str(new_row), time.strftime("%Y/%m/%d"))  
+            self.Save_Data('K'+str(self.New_PSN), time.strftime("%Y/%m/%d"))  
         else:
-            self.Save_Data('K'+str(new_row), 0)   
+            self.Save_Data('K'+str(self.New_PSN), 0)   
             
-        self.Save_Data('L'+str(new_row), member_data[8]) # 預繳
+        self.Save_Data('L'+str(self.New_PSN), member_data[8]) # 預繳
         
-        self.Save_Data('M'+str(new_row), member_data[9]) #line
+        self.Save_Data('M'+str(self.New_PSN), member_data[9]) #line
 
     def Serch_member(self, compare_m, typeofmember):
         
@@ -150,7 +151,10 @@ class OBJofXL(object):
         self.Customer_data[u'上次重接日'] = self.Read_Data('K'+str(row))
         self.Customer_data[u'預繳餘額'] = self.Read_Data('L'+str(row))
         self.Customer_data[u'Line'] = self.Read_Data('M'+str(row))
-
+        #set to '' when None
+        for key,value in self.Customer_data.items():
+                if value == None :
+                    self.Customer_data[key] = ''
         
     def Update_Member(self, row, member_data):
         '''
@@ -235,7 +239,14 @@ class OBJofXL2(OBJofXL):
             self.Customer_data[u'儲值'] = self.Read_Data('L'+str(row))
             self.Customer_data[u'消費金額'] = self.Read_Data('M'+str(row))
             self.Customer_data[u'餘額'] = self.Read_Data('N'+str(row))
-            self.Customer_data[u'備註'] = self.Read_Data('O'+str(row))            
+            self.Customer_data[u'備註'] = self.Read_Data('O'+str(row)) 
+            #set to '' when None 
+            for key,value in self.Customer_data.items():
+                if value == None :
+                    self.Customer_data[key] = ''
+            return True
+        else:
+            return False          
         
     def Add_new_member_data(self, member_data):
         '''
@@ -244,7 +255,7 @@ class OBJofXL2(OBJofXL):
         print("Save start")
         new_row = self.workseet.max_row +1 
         self.Save_Data('A'+str(new_row), self.workseet.max_row)#flow
-        self.Save_Data('B'+str(new_row), member_data[0]) #row
+        self.Save_Data('B'+str(new_row), member_data[0]) #PSN
         self.Save_Data('C'+str(new_row), time.strftime("%Y/%m/%d")) #date
         self.Save_Data('D'+str(new_row), time.strftime("%I:%M %p")) # time
         self.Save_Data('E'+str(new_row), member_data[1]) #翹度

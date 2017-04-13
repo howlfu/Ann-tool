@@ -42,11 +42,13 @@ class DemoGUI(Frame):
     def createWidgets(self):
         #input Text
         #1
+        self.bind_all('<Double-Button-1>', self.doubleclick)
         self.Text_for_save1 = Label(self, text = u"姓名", font = 16, background = "PaleVioletRed2")
         self.Text_for_save1.grid(row=0, column=0)
         #input Entry
         self.te1 = Entry(self)
         self.te1["width"] = 20 # Byte for 50 words
+        self.te1.bind('<Return>',self.enterevent)
         self.te1.grid(row=0, column=1, columnspan=2)
         #2
         self.Text_for_save2 = Label(self, text = u"電話", font = 16, background = "PaleVioletRed2")
@@ -54,6 +56,7 @@ class DemoGUI(Frame):
         #input Entry
         self.te2 = Entry(self)
         self.te2["width"] = 20 # Byte for 50 words
+        self.te2.bind('<Return>',self.enterevent)
         self.te2.grid(row=1, column=1, columnspan=2)
         #3
         self.Text_for_save3 = Label(self, text = u"生日", font = 16, background = "PaleVioletRed2")
@@ -83,14 +86,15 @@ class DemoGUI(Frame):
         self.CheckBox1.grid(row=4, column=2, columnspan=3)  
         '''    
         #6
-        self.Text_for_save6 = Label(self, text = "根數", font = 16, background =  "PaleVioletRed2")
+        self.Text_for_save6 = Label(self, text = u"根數", font = 16, background =  "PaleVioletRed2")
         self.Text_for_save6.grid(row=5, column=0)
         self.te5 = Entry(self)
         self.te5["width"] = 25 # Byte for 50 words
         self.te5.grid(row=5, column=1, columnspan=3)
         '''
+        
         #7
-        self.Text_for_save7 = Label(self, text = "價格", font = 16, background =  "PaleVioletRed2")
+        self.Text_for_save7 = Label(self, text = u"價格", font = 16, background =  "PaleVioletRed2")
         self.Text_for_save7.grid(row=5, column=0)
         self.te6 = Entry(self)
         self.te6["width"] = 20 # Byte for 50 words
@@ -110,6 +114,12 @@ class DemoGUI(Frame):
         self.te8["width"] = 20 # Byte for 50 words
         self.te8.grid(row=7, column=1, columnspan=2)
         
+        #new 消費日 
+        self.Text_for_save10 = Label(self, text = u"消費日", font = 16, background =  "PaleVioletRed2")
+        self.Text_for_save10.grid(row=8, column=0)
+        self.te9 = Entry(self)
+        self.te9["width"] = 20 # Byte for 50 words
+        self.te9.grid(row=8, column=1, columnspan=2)
         #Output
         #self.printWord = Label(self)
         #self.printWord["background"] = "LightGoldenrod1"
@@ -119,28 +129,28 @@ class DemoGUI(Frame):
         self.out = Text(self, background = "azure", foreground = "black")
         self.out["width"] = 40
         self.out["height"] = 14 
-        self.out.grid(row=8, column=0, columnspan=6)        
+        self.out.grid(row=9, column=0, columnspan=6)        
         
         #Botton
         #1
         self.save = Button(self, text = u"存檔", font = 16, background = "lemon chiffon", foreground = "black", relief = "groove")
         self.save["width"] = 6
-        self.save.grid(row=9, column=2)
+        self.save.grid(row=10, column=2)
         self.save["command"] =  self.saveMethod
         #2
         self.exit = Button(self, text = u"離開", font = 16, background = "lemon chiffon", foreground = "black", relief = "groove")  
         self.exit["width"] = 6
-        self.exit.grid(row=9, column=3)
+        self.exit.grid(row=10, column=3)
         self.exit["command"] =  self.exitMethod
         #3
         self.get = Button(self, text = u"尋找", font = 16, background = "lemon chiffon", foreground = "black", relief = "groove")  
         self.get["width"] = 6
-        self.get.grid(row=9, column=1)
+        self.get.grid(row=10, column=1)
         self.get["command"] =  self.getMethod
         #4
         self.get = Button(self, text = u"清除", font = 16, background = "lemon chiffon", foreground = "black", relief = "groove")  
         self.get["width"] = 6
-        self.get.grid(row=9, column=0)
+        self.get.grid(row=10, column=0)
         self.get["command"] =  self.clean_all
      
     def clean_all(self):
@@ -189,6 +199,7 @@ class DemoGUI(Frame):
         self.te6.delete(0, END)
         self.te7.delete(0, END)
         self.te8.delete(0, END)
+        self.te9.delete(0, END)
         self.out.delete(0.0, END)  
         if self.OpMenu_var1.get() != u'睫毛':
             self.text1.delete(0, END)
@@ -202,13 +213,14 @@ class DemoGUI(Frame):
         self.Setup_Data = OBJofXL(self.path_in_use, self.page_in_use)
         self.Setup_Data_Detail = OBJofXL2(self.DTL_path_in_use, self.DTL_page_in_use) 
         
+        #widgt2 的根數存到1
     def saveMethod(self):
         Get_Name = self.te1.get()
         Get_Phone = self.te2.get()
         Get_birth = self.te3.get()
         print("New_Member:" + str(self.New_Member)+" " +"Row_Get:" + str(self.row_get))
         if Get_Name == "" or Get_Phone == "":
-            self.Output_Infor(u"請先搜尋會員\n", True)
+            self.Output_Infor(u"存檔至少要有電話與姓名\n如果是舊會員請先搜尋\n", True)
             return 0
         else:
             #有輸入會員
@@ -235,6 +247,11 @@ class DemoGUI(Frame):
                 self.Output_Infor(u'新會員存檔', True)
                 New_Member_Info = self.get_customer_info()
                 self.Setup_Data.Add_new_member_data(New_Member_Info)
+                
+                if self.OpMenu_var1.get() != u'睫毛':
+                    last_row = self.Setup_Data.New_PSN
+                    Member_EB_Info = self.get_customer_EB_info(last_row) 
+                    self.Setup_Data_Detail.Add_new_member_data(Member_EB_Info)
                 #Add new member to the max_row
                 #self.row_get = self.Setup_Data.workseet.max_row
                 # Save ok clean
@@ -260,6 +277,12 @@ class DemoGUI(Frame):
                 f.write(Get_Name)
                 f.close()'''
                         
+    def enterevent(self,event):
+        self.getMethod()
+        
+    def doubleclick(self,event):
+        self.clean_all()
+        
     def exitMethod(self):
         self.quit() 
 
@@ -289,21 +312,25 @@ class DemoGUI(Frame):
             self.te3.insert(INSERT, str(self.Setup_Data.Customer_data[u'生日'])) 
             self.te7.insert(INSERT, str(self.Setup_Data.Customer_data[u'Line'])) 
             self.te8.insert(INSERT, str(self.Setup_Data.Customer_data[u'備註'])) 
+            
             if self.OpMenu_var1.get() != u'睫毛':
-                print(self.row_get)
-                self.Setup_Data_Detail.Get_Member(self.row_get - 1) #Row -1 = real PSN
-                self.text1.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'翹度'])
-                self.text2.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'根數'])
-                self.text3.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'粗度'])
-                self.text4.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'款式'])
-                self.text5.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'長度'])
-                self.text6.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'內容說明'])
-                if self.Setup_Data_Detail.Customer_data[u'下睫毛'] == "Y":
-                    self.Check_EyeLashes_under.select()
-                    
+                #show in widget2 if selected
+                Get_widget_2_info = self.Setup_Data_Detail.Get_Member(self.row_get - 1) #Row -1 = real PSN
+                if Get_widget_2_info:
+                    # show if we have information of last time
+                    self.text1.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'翹度'])
+                    self.text2.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'根數'])
+                    self.text3.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'粗度'])
+                    self.text4.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'款式'])
+                    self.text5.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'長度'])
+                    self.text6.insert(INSERT, self.Setup_Data_Detail.Customer_data[u'內容說明'])
+                    if self.Setup_Data_Detail.Customer_data[u'下睫毛'] == "Y":
+                        self.Check_EyeLashes_under.select()
+                else:
+                    print('there is no customer data of eyebrows')
             #show in output
             for i in self.Customer_Info:
-                if self.Setup_Data.Customer_data[i] != None:
+                if self.Setup_Data.Customer_data[i] != None and self.Setup_Data.Customer_data[i] != "":
                     self.Output_Infor(i + ": "+ str(self.Setup_Data.Customer_data[i]) + "\n", False)            
         else:
             self.Output_Infor(u"找不到, 新會員請直接存檔", True)
