@@ -231,16 +231,22 @@ class DemoGUI(Frame):
             if self.New_Member == False and self.row_get != False:
                 #非新會員, 新增筆數
                 #self.OpMenu_var1.set("睫毛")
-                self.Output_Infor(u'儲存會員資料', True)
-                Member_Info = self.get_customer_info()
-                self.Setup_Data.Update_Member(self.row_get, Member_Info)
                 if self.OpMenu_var1.get() != u'睫毛':
                     Member_EB_Info = self.get_customer_EB_info(self.row_get) 
                     self.Setup_Data_Detail.Add_new_member_data(Member_EB_Info)
+                #save EB_infor befor Customer info to get 根數
+                self.Output_Infor(u'儲存會員資料', True)
+                Member_Info = self.get_customer_info()
+                self.Setup_Data.Update_Member(self.row_get, Member_Info)
+                
                 self.clean_flag()
                 
             elif self.New_Member == True and self.row_get == False:
                 #找不到會員且是新會員
+                if self.OpMenu_var1.get() != u'睫毛':
+                    last_row = self.Setup_Data.New_PSN
+                    Member_EB_Info = self.get_customer_EB_info(last_row) 
+                    self.Setup_Data_Detail.Add_new_member_data(Member_EB_Info)
                 if Get_Name == "" or Get_Phone == "" or Get_birth == "":
                     self.Output_Infor(u"資料不完全,至少輸入姓名,電話,生日\n", True)
                     return 0
@@ -248,10 +254,6 @@ class DemoGUI(Frame):
                 New_Member_Info = self.get_customer_info()
                 self.Setup_Data.Add_new_member_data(New_Member_Info)
                 
-                if self.OpMenu_var1.get() != u'睫毛':
-                    last_row = self.Setup_Data.New_PSN
-                    Member_EB_Info = self.get_customer_EB_info(last_row) 
-                    self.Setup_Data_Detail.Add_new_member_data(Member_EB_Info)
                 #Add new member to the max_row
                 #self.row_get = self.Setup_Data.workseet.max_row
                 # Save ok clean
@@ -312,7 +314,7 @@ class DemoGUI(Frame):
             self.te3.insert(INSERT, str(self.Setup_Data.Customer_data[u'生日'])) 
             self.te7.insert(INSERT, str(self.Setup_Data.Customer_data[u'Line'])) 
             self.te8.insert(INSERT, str(self.Setup_Data.Customer_data[u'備註'])) 
-            
+            #self.te9.insert(INSERT, str(self.Setup_Data.Customer_data[u'最近消費日'])) 
             if self.OpMenu_var1.get() != u'睫毛':
                 #show in widget2 if selected
                 Get_widget_2_info = self.Setup_Data_Detail.Get_Member(self.row_get - 1) #Row -1 = real PSN
@@ -376,14 +378,16 @@ class DemoGUI(Frame):
         Member_Info.append(self.te2.get())  #4 電話
         Member_Info.append(self.OpMenu_var1.get()) #5 次數
         Member_Info.append(self.CheckVar1.get()) #6 除毛
-        Member_Info.append(self.ReDo)      #7 重接日
+        Member_Info.append(self.te9.get())      #7 消費日
         prepayment = self.get_prepayment()
         if prepayment == False:
             Member_Info.append(0) #8 預繳     
         else:
             Member_Info.append(prepayment) #8 預繳            
         Member_Info.append(self.te7.get()) #9 Line
+        Member_Info.append(self.ReDo)      #10 重接
         return Member_Info
+        
     
     def get_customer_EB_info(self, row):
         Member_EB_Info = []
@@ -403,6 +407,7 @@ class DemoGUI(Frame):
         else:
             Member_EB_Info.append(prepayment)
         Member_EB_Info.append(self.te8.get()) #11 備註
+        Member_EB_Info.append(self.te9.get()) #12 消費日
         return Member_EB_Info
     
     def get_prepayment(self):

@@ -178,10 +178,20 @@ class OBJofXL(object):
                 self.Save_Data('H'+str(row), int(self.Customer_data[u'除毛次數']) + 1)
                 
         #上次消費日 
-        self.Save_Data('J'+str(row), time.strftime("%Y/%m/%d")) 
+        if member_data[7]!= "":# or member_data[7] != None:
+        # some one add date
+            self.Save_Data('J'+str(row), member_data[7])
+        else:
+        # default save current date
+            self.Save_Data('J'+str(row), time.strftime("%Y/%m/%d")) 
         #重接
-        if member_data[7] == True:
-            self.Save_Data('K'+str(row), time.strftime("%Y/%m/%d"))
+        if member_data[10] == True:
+            if member_data[7] or member_data[7] != None:
+                # some one add date
+                self.Save_Data('K'+str(row), member_data[7])
+            else:
+                # default save current date    
+                self.Save_Data('K'+str(row), time.strftime("%Y/%m/%d"))
 
         self.Save_Data('L'+str(row), member_data[8])
         
@@ -256,8 +266,12 @@ class OBJofXL2(OBJofXL):
         new_row = self.workseet.max_row +1 
         self.Save_Data('A'+str(new_row), self.workseet.max_row)#flow
         self.Save_Data('B'+str(new_row), member_data[0]) #PSN
-        self.Save_Data('C'+str(new_row), time.strftime("%Y/%m/%d")) #date
-        self.Save_Data('D'+str(new_row), time.strftime("%I:%M %p")) # time
+        if member_data[12]:
+            self.Save_Data('C'+str(new_row), member_data[12])
+        else:
+            self.Save_Data('C'+str(new_row), time.strftime("%Y/%m/%d")) #date
+            self.Save_Data('D'+str(new_row), time.strftime("%I:%M %p")) # time
+        
         self.Save_Data('E'+str(new_row), member_data[1]) #翹度
         self.Save_Data('F'+str(new_row), member_data[2]) #根數
         self.Save_Data('G'+str(new_row), member_data[3]) #粗度
